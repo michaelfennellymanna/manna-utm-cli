@@ -10,7 +10,7 @@ import (
 
 var Start = &cobra.Command{
 	Use:   "start",
-	Short: "Start the application listening on the provided server port.",
+	Short: "Start the GeoJSON server on <port>.",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		port, err := cmd.Flags().GetInt("port")

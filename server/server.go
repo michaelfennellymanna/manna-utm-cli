@@ -16,7 +16,7 @@ func GetServer(port int) *gin.Engine {
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"message": "asdb.fi mock server is healthy.",
+			"message": "manna-utm-cli geojson server is healthy.",
 		})
 	})
 
@@ -36,7 +36,7 @@ func GetServer(port int) *gin.Engine {
 
 	router.GET("/features/events", func(c *gin.Context) {
 		// CORS for SSE (adjust origin as needed)
-		c.Writer.Header().Set("Access-Control-Allow-Origin", fmt.Sprintf("http://localhost:%d", port))
+		c.Writer.Header().Set("Access-Control-Allow-Origin", fmt.Sprintf("http://localhost:3000"))
 		// If you use cookies/auth:
 		// c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 
@@ -63,11 +63,22 @@ func GetServer(port int) *gin.Engine {
 		defer ticker.Stop()
 
 		log.Infof("operning sse connection")
+
+		_, config, err := sequence.LoadConfig("./.libconfig/sequence.yaml")
+		if err != nil {
+			log.Fatalf("error occurred marshalling sequence to GeoJson %v", err)
+		}
+		operationalIntent := config.ToGeoJson()
+		payload, err := json.Marshal(operationalIntent)
+		if err != nil {
+			log.Fatalf("error occurred marshalling sequence to GeoJson %v", err)
+		}
+
+		log.Infof("payload:\n%s", payload)
+
 		for {
 			select {
 			case <-ticker.C:
-				payload := "payload"
-
 				log.Infof("responding to client with payload")
 				// Send event. Each SSE event is delimited by a blank line.
 				// Note: "data:" supports multi-line; JSON is usually single-line.

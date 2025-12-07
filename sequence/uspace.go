@@ -25,8 +25,8 @@ func UspaceOperationalIntentFromConfig(config *OperationalIntentConfig) *uspace.
 	for _, coordinate := range config.WaypointCoordinates {
 		// create the 4d volume for the coordinate
 		p := orb.Point{
-			coordinate[0],
 			coordinate[1],
+			coordinate[0],
 		}
 		volumes = append(volumes, createStandard4dVolume(curTime, timeIncrement, p))
 		curTime.Add(timeIncrement)
@@ -54,7 +54,7 @@ func createStandard4dVolume(startTime time.Time, duration time.Duration, center 
 	return uspace.Volume4d{
 		TimeStart: startTime,
 		TimeEnd:   startTime.Add(duration),
-		Polygon:   hexagonPlanar(center, 1000),
+		Polygon:   hexagonPlanar(center, 0.001),
 	}
 }
 

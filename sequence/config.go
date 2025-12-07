@@ -20,12 +20,14 @@ type Config struct {
 	OperationalIntents []OperationalIntentConfig `yaml:"operational_intents"`
 }
 
-func (c Config) ToGeoJson() []*geojson.FeatureCollection {
-	var allFeatureCollections []*geojson.FeatureCollection
+func (c Config) ToGeoJson() *geojson.FeatureCollection {
+	var featureCollection geojson.FeatureCollection
 	for _, intent := range c.OperationalIntents {
-		allFeatureCollections = append(allFeatureCollections, intent.geoJsonFc())
+		for _, feature := range *intent.geoJsonFeatureSlice() {
+			featureCollection.Append(&feature)
+		}
 	}
-	return allFeatureCollections
+	return &featureCollection
 }
 
 func LoadConfig(path string) (string, *Config, error) {
@@ -56,10 +58,10 @@ type OperationalIntentConfig struct {
 	WaypointCoordinates [][2]float64  `yaml:"waypoint_coordinates"`
 }
 
-func (oic OperationalIntentConfig) geoJsonFc() *geojson.FeatureCollection {
+func (oic OperationalIntentConfig) geoJsonFeatureSlice() *[]geojson.Feature {
 	// Create all the 4d Volumes
 	operationalIntent := UspaceOperationalIntentFromConfig(&oic)
-	var fc geojson.FeatureCollection
+	var fc []geojson.Feature
 	for _, v := range operationalIntent.Volumes {
 		// create a feature from the polygon
 		f := geojson.NewFeature(v.Polygon)
@@ -68,7 +70,7 @@ func (oic OperationalIntentConfig) geoJsonFc() *geojson.FeatureCollection {
 			"start_time": v.TimeStart,
 			"end_time":   v.TimeEnd,
 		}
-		fc.Append(f)
+		fc = append(fc, *f)
 	}
 	return &fc
 }
