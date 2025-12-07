@@ -1,4 +1,4 @@
-package model
+package utm
 
 import "github.com/google/uuid"
 
@@ -8,7 +8,7 @@ type OperationalIntent struct {
 }
 
 type OperationalIntentReference struct {
-	ID
+	ID uuid.UUID `json:"id"`
 }
 
 type OperationalIntentDetails struct {

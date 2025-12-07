@@ -1,1 +1,16 @@
-= manna-utm GeoJSON API, and testing command line tool.
+= manna-utm CLI tool.
+
+The manna-utm CLI tool has many usages for working with the `manna-utm` platform. You can do things like:
+
+1. Generate simulation data.
+2. Start a proxy server for streaming GeoJSON representations of `manna-utm` operational intent information.
+3. Continuously poll `manna-utm` for telemetry data - simulating the behavior of a RID Display Provider.
+
+== Usage
+
+[source, bash]
+----
+# Start the manna-utm command line tool in server mode.
+go run main.go start
+----
+
