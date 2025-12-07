@@ -8,9 +8,9 @@ import (
 	"manna.aero/manna-utm-geojson-api/server"
 )
 
-var Start = &cobra.Command{
-	Use:   "start",
-	Short: "Start the GeoJSON server on <port>.",
+var RidDP = &cobra.Command{
+	Use:   "riddp",
+	Short: "RidDP the Remote ID Display Provider server on <port>.",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		port, err := cmd.Flags().GetInt("port")

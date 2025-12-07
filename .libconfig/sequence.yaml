@@ -1,4 +1,5 @@
-operational_intents:
+name: "Downtown Geneva simulation."
+operational_intent_configs:
   - name: "SWITZERLAND1"
     owner_name: utm.manna.aero
     owner_baseurl: http://localhost:38080

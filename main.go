@@ -25,7 +25,7 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	cmd.Start.Flags().IntVarP(&port, "port", "p", 38080, "Listen port to bind the server to.")
+	cmd.RidDP.Flags().IntVarP(&port, "port", "p", 38080, "Listen port to bind the server to.")
 	cmd.Data.Flags().StringVar(&fromFile, "file", "./.libconfig/sequence.yaml", "The path to the directory that you want to write the JSON contents of the simulation data to.")
 
 	uss_client_cmds.UssClientFetchTelemetry.Flags().StringVar(&fromFile, "file", "", "The file that contains the JSON for the telemetry message required to send.")
@@ -36,7 +36,7 @@ func init() {
 }
 
 func main() {
-	rootCmd.AddCommand(cmd.Start)
+	rootCmd.AddCommand(cmd.RidDP)
 	rootCmd.AddCommand(cmd.Data)
 
 	rootCmd.AddCommand(uss_client_cmds.UssClientFetchTelemetry)

@@ -1,10 +1,6 @@
 package uspace
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/paulmach/orb"
@@ -38,22 +34,4 @@ type OperationalIntent struct {
 	DepartureTime time.Time  `json:"departure_time"`
 	Waypoints     []Waypoint `json:"waypoints"`
 	Volumes       []Volume4d `json:"volumes"`
-}
-
-func LoadOperationalIntentFromFile(path string) (*OperationalIntent, error) {
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("read config: %w", err)
-	}
-
-	var intent OperationalIntent
-	if err := json.Unmarshal(b, &intent); err != nil {
-		return nil, fmt.Errorf("parse yaml: %w", err)
-	}
-
-	var cfgName string
-	cfgName = strings.TrimSuffix(path, ".yaml")
-	cfgName = strings.TrimPrefix(cfgName, "./.libconfig/")
-
-	return &intent, nil
 }

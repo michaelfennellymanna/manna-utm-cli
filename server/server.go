@@ -21,7 +21,7 @@ func GetServer(port int) *gin.Engine {
 	})
 
 	router.GET("/features", func(c *gin.Context) {
-		_, config, err := sequence.LoadConfig("./.libconfig/sequence.yaml")
+		config, err := sequence.LoadConfig("./.libconfig/sequence.yaml")
 		if err != nil {
 			c.Data(http.StatusInternalServerError, "application/json", []byte(err.Error()))
 		}
@@ -64,7 +64,7 @@ func GetServer(port int) *gin.Engine {
 
 		log.Infof("operning sse connection")
 
-		_, config, err := sequence.LoadConfig("./.libconfig/sequence.yaml")
+		config, err := sequence.LoadConfig("./.libconfig/sequence.yaml")
 		if err != nil {
 			log.Fatalf("error occurred marshalling sequence to GeoJson %v", err)
 		}
