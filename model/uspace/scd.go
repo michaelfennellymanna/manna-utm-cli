@@ -10,11 +10,11 @@ import (
 //
 // see https://github.com/m4a3/manna-utm/blob/persistence/src/main/java/manna/aero/utm/model/manna/MannaUspaceVolume4d.java
 type Volume4d struct {
-	TimeStart     time.Time
-	TimeEnd       time.Time
-	Polygon       orb.Polygon
-	altitudeLower float64
-	altitudeUpper float64
+	TimeStart     time.Time   `json:"time_start"`
+	TimeEnd       time.Time   `json:"time_end"`
+	Polygon       orb.Polygon `json:"polygon"`
+	AltitudeLower float64     `json:"altitude_lower"`
+	AltitudeUpper float64     `json:"altitude_upper"`
 }
 
 // Waypoint is equivalent to https://github.com/m4a3/manna-utm/blob/persistence/src/main/java/manna/aero/utm/model/manna/MannaUspaceWaypoint.java

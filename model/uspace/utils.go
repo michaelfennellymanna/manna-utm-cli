@@ -56,8 +56,8 @@ func create4dVolFromStdContents(startTime time.Time, endTime time.Time, polyGon 
 		TimeStart:     startTime,
 		TimeEnd:       endTime,
 		Polygon:       *polyGon,
-		altitudeLower: 0.0,
-		altitudeUpper: 0.0,
+		AltitudeLower: 0.0,
+		AltitudeUpper: 0.0,
 	}
 }
 
