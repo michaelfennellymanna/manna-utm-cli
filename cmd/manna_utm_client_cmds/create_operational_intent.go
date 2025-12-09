@@ -11,16 +11,7 @@ import (
 var CreateOperationalIntent = &cobra.Command{
 	Use:   "mutm-coi",
 	Short: "Create an operational intent for <mission_id> with the data from <file> in manna-utm listening on <port>.",
-	Args:  cobra.MaximumNArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		port, err := cmd.Flags().GetInt("port")
-		if err != nil {
-			return err
-		}
-		entityId, err := cmd.Flags().GetString("mission_id")
-		if err != nil {
-			return err
-		}
 		writeRequests, err := cmd.Flags().GetBool("dump-requests")
 		if err != nil {
 			return err
@@ -29,17 +20,18 @@ var CreateOperationalIntent = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		uavId, err := cmd.Flags().GetInt("uav_id")
+
+		appConfig, err := config.LoadConfig("./config.yaml")
 		if err != nil {
 			return err
 		}
 
-		mannaUtmClient, err := manna_utm_uspace_client.NewMannaUtmClient("localhost", port, writeRequests)
+		mannaUtmClient, err := manna_utm_uspace_client.NewMannaUtmClient("localhost", appConfig.MannaUtmPort, writeRequests)
 		if err != nil {
 			log.Fatalf("unable to create USS mannaUtmClient: %v", err)
 		}
 
-		log.Debugf("attempting to create operational intent via manna-utm U-Space interface on port: %d", port)
+		log.Debugf("attempting to create operational intent via manna-utm U-Space interface on port: %d", appConfig.MannaUtmPort)
 
 		// load config
 		appCnf, err := config.LoadConfig("./config.yaml")
@@ -54,7 +46,7 @@ var CreateOperationalIntent = &cobra.Command{
 
 		oi := uspace.OperationalIntentFromConfig(oiCnf)
 
-		err = mannaUtmClient.CreateOperationalIntent(cmd.Context(), uavId, entityId, oi)
+		err = mannaUtmClient.CreateOperationalIntent(cmd.Context(), oiCnf.UavId, oiCnf.MissionId.String(), oi)
 		if err != nil {
 			log.Fatalf("failed to create operational intent: %v", err.Error())
 		}

@@ -6,6 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"manna.aero/manna-utm-geojson-api/config"
 	"manna.aero/manna-utm-geojson-api/manna_utm_uspace_client"
 )
 
@@ -14,28 +15,27 @@ var Query4dVolume = &cobra.Command{
 	Short: "Use the manna-utm client to query the a UTM airspace with provided 4d volume data.",
 	Args:  cobra.MaximumNArgs(3),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		port, err := cmd.Flags().GetInt("port")
+		volName, err := cmd.Flags().GetString("n")
 		if err != nil {
 			return err
 		}
-		if len(args) == 1 {
-			port = 28080
-			log.Infof("no port defined, configuring target USS port to default %d", port)
-		}
-
-		fromFilePath, err := cmd.Flags().GetString("file")
 		writeRequests, err := cmd.Flags().GetBool("dump-requests")
 		if err != nil {
 			return err
 		}
 
-		client, err := manna_utm_uspace_client.NewMannaUtmClient("localhost", port, writeRequests)
+		c, err := config.LoadConfig("./config.yaml")
+		if err != nil {
+			return err
+		}
+
+		client, err := manna_utm_uspace_client.NewMannaUtmClient("localhost", c.MannaUtmPort, writeRequests)
 		if err != nil {
 			log.Fatalf("unable to create USS client: %v", err)
 		}
 
-		log.Debugf("attempting to fetch most recent telemetry message from USS server on port: %d", port)
-		allOperationsIn4dVolume, err := client.Query4dVolume(cmd.Context(), fromFilePath)
+		log.Debugf("attempting to fetch most recent telemetry message from USS server on port: %d", c.MannaUtmPort)
+		allOperationsIn4dVolume, err := client.Query4dVolume(cmd.Context(), volName)
 		if err != nil {
 			log.Fatalf("unable to fetch most recent telemetry message from USS server: %v", err)
 		}

@@ -1,10 +1,12 @@
 name: "Downtown Geneva simulation."
+manna_utm_port: 28082
 operational_intent_configs:
   - name: "SWITZERLAND1"
     owner_name: utm.manna.aero
     owner_baseurl: http://localhost:38080
     priority: 1
-    id: 8302353f-a149-40ac-87c4-dd071b124b1d
+    mission_id: 8302353f-a149-40ac-87c4-dd071b124b1d
+    uav_id: 1
     duration: 60s
     waypoint_coordinates:
       - [46.19128, 6.12335]
@@ -33,3 +35,13 @@ operational_intent_configs:
       - [46.19642, 6.15052]
       - [46.19645, 6.15141]
       - [46.19615, 6.1523]
+4d_volumes:
+  - name: "volume_1"
+    duration: 60s
+    alt_lower: 220
+    alt_upper: 330
+    polygon_coords:
+      - [46.19335, 6.12072]
+      - [46.1888, 6.1235]
+      - [46.19908, 6.15286]
+      - [46.19352, 6.15509]

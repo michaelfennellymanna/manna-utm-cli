@@ -10,7 +10,7 @@ import (
 
 var RidDP = &cobra.Command{
 	Use:   "riddp",
-	Short: "RidDP the Remote ID Display Provider server on <port>.",
+	Short: "RidDP the Remote MissionId Display Provider server on <port>.",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		port, err := cmd.Flags().GetInt("port")

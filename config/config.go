@@ -14,14 +14,26 @@ import (
 )
 
 type Config struct {
-	Name                     string
+	Name                     string                    `yaml:"name"`
+	MannaUtmPort             int                       `yaml:"manna_utm_port"`
 	OperationalIntentConfigs []OperationalIntentConfig `yaml:"operational_intent_configs"`
+	FourDVolumes             []Volume4dConfig          `yaml:"4d_volumes"`
 }
 
 func (appCnf *Config) GetOperationalIntentConfigByName(name string) (*OperationalIntentConfig, error) {
 	for _, oiCnf := range appCnf.OperationalIntentConfigs {
 		if oiCnf.Name == name {
 			return &oiCnf, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no operational intent is configured by the name: %s", name)
+}
+
+func (appCnf *Config) Get4dVolumeConfigByName(name string) (*Volume4dConfig, error) {
+	for _, vCnf := range appCnf.FourDVolumes {
+		if vCnf.Name == name {
+			return &vCnf, nil
 		}
 	}
 
@@ -47,7 +59,7 @@ func LoadConfig(path string) (*Config, error) {
 	return &cfg, nil
 }
 
-func (appCnf Config) ToGeoJson() *geojson.FeatureCollection {
+func (appCnf *Config) ToGeoJson() *geojson.FeatureCollection {
 	var featureCollection geojson.FeatureCollection
 	for _, intent := range appCnf.OperationalIntentConfigs {
 		for _, feature := range *intent.geoJsonFeatureSlice() {
@@ -62,9 +74,18 @@ type OperationalIntentConfig struct {
 	OwnerName           string        `yaml:"owner_name"`
 	OwnerBaseURL        string        `yaml:"owner_baseurl"`
 	Priority            uint16        `yaml:"priority"`
-	ID                  uuid.UUID     `yaml:"id"`
+	MissionId           uuid.UUID     `yaml:"mission_id"`
+	UavId               int           `yaml:"uav_id"`
 	Duration            time.Duration `yaml:"duration"`
 	WaypointCoordinates [][2]float64  `yaml:"waypoint_coordinates"`
+}
+
+type Volume4dConfig struct {
+	Name          string        `yaml:"name"`
+	Duration      time.Duration `yaml:"duration"`
+	AltLower      float64       `yaml:"alt_lower"`
+	AltUpper      float64       `yaml:"alt_upper"`
+	PolygonCoords [][2]float64  `yaml:"polygon_coords"`
 }
 
 func (oic OperationalIntentConfig) geoJsonFeatureSlice() *[]geojson.Feature {

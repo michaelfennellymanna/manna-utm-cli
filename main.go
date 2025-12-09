@@ -12,9 +12,7 @@ var (
 	port                    int
 	fromFile                string
 	entityId                string
-	missionId               string
 	oiName                  string
-	uavId                   int
 	logLevel                string = "info"
 	writeRequestsToHttpFile bool   = false
 )
@@ -39,10 +37,10 @@ func init() {
 	manna_utm_client_cmds.Query4dVolume.Flags().BoolVar(&writeRequestsToHttpFile, "w", false, "Specify true/false to enable/disable writing requests to http files.")
 
 	manna_utm_client_cmds.CreateOperationalIntent.Flags().StringVarP(&oiName, "name", "n", "", "The name of the operational intent that you want to create.")
-	manna_utm_client_cmds.CreateOperationalIntent.Flags().IntVar(&port, "port", 28082, "The port that manna-utm is listening on.")
-	manna_utm_client_cmds.CreateOperationalIntent.Flags().StringVarP(&missionId, "mission_id", "m", "", "The ID of the mission that you want to create.")
-	manna_utm_client_cmds.CreateOperationalIntent.Flags().IntVarP(&uavId, "uav_id", "u", 1, "The ID of the UAV flying the payload in the operational intent.")
 	manna_utm_client_cmds.CreateOperationalIntent.Flags().BoolVarP(&writeRequestsToHttpFile, "dump-requests", "d", false, "Specify true/false to enable/disable writing requests to http files.")
+
+	manna_utm_client_cmds.EndOperationalIntent.Flags().BoolVarP(&writeRequestsToHttpFile, "dump-requests", "d", false, "Specify true/false to enable/disable writing requests to http files.")
+	manna_utm_client_cmds.EndOperationalIntent.Flags().StringVarP(&oiName, "name", "n", "", "the name of the operational intent that you want to delete.")
 }
 
 func configureLogging(level string) {
@@ -74,6 +72,7 @@ func main() {
 
 	rootCmd.AddCommand(manna_utm_client_cmds.Query4dVolume)
 	rootCmd.AddCommand(manna_utm_client_cmds.CreateOperationalIntent)
+	rootCmd.AddCommand(manna_utm_client_cmds.EndOperationalIntent)
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)

@@ -71,7 +71,7 @@ func OperationalIntentFromConfig(oicnf *config.OperationalIntentConfig) *Operati
 	log.Tracef("returning UTM operational intent: %s", oicnf.Name)
 	return &OperationalIntent{
 		Reference: OperationalIntentReference{
-			ID: oicnf.ID,
+			ID: oicnf.MissionId,
 		},
 		Details: OperationalIntentDetails{
 			Volumes:  vols,

@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/paulmach/orb"
+	"manna.aero/manna-utm-geojson-api/config"
+	"manna.aero/manna-utm-geojson-api/geo"
 )
 
 // Volume4d is equivalent to the type MannaUspaceVolume4d in manna-utm.
@@ -56,6 +58,25 @@ func (vol Volume4d) MarshalJSON() ([]byte, error) {
 		AltitudeUpper: float32(vol.AltitudeUpper),
 		Wsg84:         vol.Wsg84,
 	})
+}
+
+func (vol Volume4d) ToReader() (*bytes.Reader, error) {
+	jsonBytes, err := vol.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(jsonBytes), nil
+}
+
+func GetVolume4dFromConfig(config config.Volume4dConfig) Volume4d {
+	return Volume4d{
+		TimeStart:     time.Now(),
+		TimeEnd:       time.Now().Add(config.Duration),
+		AltitudeLower: config.AltLower,
+		AltitudeUpper: config.AltUpper,
+		Polygon:       geo.PolygonFromCoords(config.PolygonCoords),
+	}
 }
 
 // Waypoint is equivalent to https://github.com/m4a3/manna-utm/blob/persistence/src/main/java/manna/aero/utm/model/manna/MannaUspaceWaypoint.java
