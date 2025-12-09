@@ -25,8 +25,7 @@ var Query4dVolume = &cobra.Command{
 
 		fromFilePath, err := cmd.Flags().GetString("file")
 
-		baseUrl := fmt.Sprintf("http://localhost:%d/", port)
-		client, err := manna_utm_client.NewMannaUtmClient(baseUrl)
+		client, err := manna_utm_client.NewMannaUtmClient("localhost", port)
 		if err != nil {
 			log.Fatalf("unable to create USS client: %v", err)
 		}

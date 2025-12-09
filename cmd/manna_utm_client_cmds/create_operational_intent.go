@@ -31,9 +31,12 @@ var CreateOperationalIntent = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		uavId, err := cmd.Flags().GetInt("uav_id")
+		if err != nil {
+			return err
+		}
 
-		baseUrl := fmt.Sprintf("http://localhost:%d/", port)
-		mannaUtmClient, err := manna_utm_client.NewMannaUtmClient(baseUrl)
+		mannaUtmClient, err := manna_utm_client.NewMannaUtmClient("localhost", port)
 		if err != nil {
 			log.Fatalf("unable to create USS mannaUtmClient: %v", err)
 		}
@@ -46,9 +49,9 @@ var CreateOperationalIntent = &cobra.Command{
 			log.Fatalf("unable to load operational intent from file: %v", err)
 		}
 
-		err = mannaUtmClient.CreateOperationalIntent(cmd.Context(), entityId, intent)
+		err = mannaUtmClient.CreateOperationalIntent(cmd.Context(), uavId, entityId, intent)
 		if err != nil {
-			log.Fatalf("unable to fetch most recent telemetry message from USS server: %v", err)
+			log.Fatalf("failed to create operational intent: %v", err.Error())
 		}
 
 		data, err := json.MarshalIndent(intent, "", "    ")

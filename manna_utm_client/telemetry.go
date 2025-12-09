@@ -12,21 +12,12 @@ import (
 	"manna.aero/manna-utm-geojson-api/model/uspace"
 )
 
-type MannaUtmError struct {
-	StatusCode int
-	Body       string
-}
-
-func (m MannaUtmError) Error() string {
-	return fmt.Sprintf("manna-utm client error: status=%d body=%q", m.StatusCode, m.Body)
-}
-
 // SendTelemetry interfaces with the manna-utm telemetry interface
 //
 // see https://github.com/m4a3/manna-utm/blob/persistence/src/main/java/manna/aero/utm/controller/UTMController.java#L165-L197
 func (mutm *MannaUtmClient) SendTelemetry(ctx context.Context, message *uspace.Telemetry, missionId string, uavId int) error {
 
-	requestUrl := fmt.Sprintf("%s/ussClient/v1/operational_intents/%s", mutm.baseUrl.String(), missionId)
+	requestUrl := fmt.Sprintf("%s/ussClient/v1/operational_intents/%s", mutm.baseUrl, missionId)
 
 	messageContents, err := json.Marshal(message)
 	if err != nil {

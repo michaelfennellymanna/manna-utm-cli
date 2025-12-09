@@ -1,8 +1,7 @@
 package main
 
 import (
-	"log"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"manna.aero/manna-utm-geojson-api/cmd"
 	"manna.aero/manna-utm-geojson-api/cmd/manna_utm_client_cmds"
@@ -10,9 +9,12 @@ import (
 )
 
 var (
-	port     int
-	fromFile string
-	entityId string
+	port      int
+	fromFile  string
+	entityId  string
+	missionId string
+	uavId     int
+	logLevel  string = "info"
 )
 
 var rootCmd = &cobra.Command{
@@ -33,9 +35,32 @@ func init() {
 
 	manna_utm_client_cmds.Query4dVolume.Flags().StringVar(&fromFile, "file", "", "The file that contains the JSON for the 4d volume you want to send.")
 	manna_utm_client_cmds.CreateOperationalIntent.Flags().StringVar(&fromFile, "file", "", "The file that contains the JSON for the operational intent you want to create.")
+	manna_utm_client_cmds.CreateOperationalIntent.Flags().IntVar(&port, "port", 28082, "The port that manna-utm is listening on.")
+	manna_utm_client_cmds.CreateOperationalIntent.Flags().StringVar(&missionId, "mission_id", "", "The ID of the mission that you want to create.")
+	manna_utm_client_cmds.CreateOperationalIntent.Flags().IntVar(&uavId, "uav_id", 1, "The ID of the UAV flying the payload in the operational intent.")
+}
+
+func configureLogging(level string) {
+	switch level {
+	case "debug":
+		log.SetLevel(log.DebugLevel)
+	case "info":
+		log.SetLevel(log.InfoLevel)
+	case "warn":
+		log.SetLevel(log.WarnLevel)
+	case "error":
+		log.SetLevel(log.ErrorLevel)
+	case "fatal":
+		log.SetLevel(log.FatalLevel)
+	default:
+		log.SetLevel(log.InfoLevel)
+		log.Warnf("Unknown log level %s, falling back to info", level)
+	}
 }
 
 func main() {
+	rootCmd.PersistentFlags().StringVarP(&logLevel, "log-level", "l", "info", "The log level that you want to run your command with.")
+	cobra.OnInitialize(func() { configureLogging(logLevel) })
 	rootCmd.AddCommand(cmd.RidDP)
 	rootCmd.AddCommand(cmd.Data)
 

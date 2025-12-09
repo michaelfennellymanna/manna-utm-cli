@@ -32,6 +32,6 @@ type Waypoint struct {
 type OperationalIntent struct {
 	Priority      uint16     `json:"priority"`
 	DepartureTime time.Time  `json:"departure_time"`
-	Waypoints     []Waypoint `json:"waypoints"`
 	Volumes       []Volume4d `json:"volumes"`
+	Waypoints     []Waypoint `json:"waypoints"`
 }
