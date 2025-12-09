@@ -3,7 +3,7 @@ operational_intent_configs:
   - name: "SWITZERLAND1"
     owner_name: utm.manna.aero
     owner_baseurl: http://localhost:38080
-    priority: 0
+    priority: 1
     id: 8302353f-a149-40ac-87c4-dd071b124b1d
     duration: 60s
     waypoint_coordinates:

@@ -1,8 +1,7 @@
-package sequence
+package config
 
 import (
 	"fmt"
-	"math"
 	"os"
 	"strings"
 	"time"
@@ -11,11 +10,22 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	"gopkg.in/yaml.v3"
+	"manna.aero/manna-utm-geojson-api/geo"
 )
 
 type Config struct {
 	Name                     string
 	OperationalIntentConfigs []OperationalIntentConfig `yaml:"operational_intent_configs"`
+}
+
+func (appCnf *Config) GetOperationalIntentConfigByName(name string) (*OperationalIntentConfig, error) {
+	for _, oiCnf := range appCnf.OperationalIntentConfigs {
+		if oiCnf.Name == name {
+			return &oiCnf, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no operational intent is configured by the name: %s", name)
 }
 
 func LoadConfig(path string) (*Config, error) {
@@ -37,9 +47,9 @@ func LoadConfig(path string) (*Config, error) {
 	return &cfg, nil
 }
 
-func (c Config) ToGeoJson() *geojson.FeatureCollection {
+func (appCnf Config) ToGeoJson() *geojson.FeatureCollection {
 	var featureCollection geojson.FeatureCollection
-	for _, intent := range c.OperationalIntentConfigs {
+	for _, intent := range appCnf.OperationalIntentConfigs {
 		for _, feature := range *intent.geoJsonFeatureSlice() {
 			featureCollection.Append(&feature)
 		}
@@ -57,31 +67,13 @@ type OperationalIntentConfig struct {
 	WaypointCoordinates [][2]float64  `yaml:"waypoint_coordinates"`
 }
 
-func HexagonPlanar(center orb.Point) orb.Polygon {
-	const radius = 0.001
-	const sides = 6
-	ring := make(orb.Ring, 0, sides+1)
-
-	for i := 0; i < sides; i++ {
-		angle := (math.Pi / 3.0) * float64(i) // 60° steps
-		x := center[0] + radius*math.Cos(angle)
-		y := center[1] + radius*math.Sin(angle)
-		ring = append(ring, orb.Point{x, y})
-	}
-
-	// Close the ring (GeoJSON polygon requirement)
-	ring = append(ring, ring[0])
-
-	return orb.Polygon{ring}
-}
-
 func (oic OperationalIntentConfig) geoJsonFeatureSlice() *[]geojson.Feature {
 	// Create all the 4d Volumes
 	var fc []geojson.Feature
 	startTime := time.Now()
 	duration := oic.Duration / time.Duration(len(oic.WaypointCoordinates))
 	for _, coordinate := range oic.WaypointCoordinates {
-		startTime, endTime, polygon := CreateStd4dVolContents(startTime, duration, orb.Point{coordinate[1], coordinate[0]})
+		startTime, endTime, polygon := geo.CreateStd4dVolContents(startTime, duration, orb.Point{coordinate[1], coordinate[0]})
 		// create a feature from the polygon
 		f := geojson.NewFeature(polygon)
 		// add metadata to the polygon, annotating start & end times
@@ -92,13 +84,4 @@ func (oic OperationalIntentConfig) geoJsonFeatureSlice() *[]geojson.Feature {
 		fc = append(fc, *f)
 	}
 	return &fc
-}
-
-// CreateStd4dVolContents computes and returns the start time, end time
-//
-//	and 2d polygon for a waypoint and time data.
-func CreateStd4dVolContents(startTime time.Time, duration time.Duration, center orb.Point) (time.Time, time.Time, *orb.Polygon) {
-	polygon := HexagonPlanar(center)
-	endTime := startTime.Add(duration)
-	return startTime, endTime, &polygon
 }

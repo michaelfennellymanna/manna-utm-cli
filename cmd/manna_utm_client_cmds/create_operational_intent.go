@@ -1,12 +1,10 @@
 package manna_utm_client_cmds
 
 import (
-	"encoding/json"
-	"fmt"
-
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"manna.aero/manna-utm-geojson-api/manna_utm_client"
+	"manna.aero/manna-utm-geojson-api/config"
+	"manna.aero/manna-utm-geojson-api/manna_utm_uspace_client"
 	"manna.aero/manna-utm-geojson-api/model/uspace"
 )
 
@@ -19,15 +17,15 @@ var CreateOperationalIntent = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if len(args) == 1 {
-			port = 28080
-			log.Infof("no port defined, configuring target USS port to default %d", port)
-		}
 		entityId, err := cmd.Flags().GetString("mission_id")
 		if err != nil {
 			return err
 		}
-		filePath, err := cmd.Flags().GetString("file")
+		writeRequests, err := cmd.Flags().GetBool("dump-requests")
+		if err != nil {
+			return err
+		}
+		oiName, err := cmd.Flags().GetString("name")
 		if err != nil {
 			return err
 		}
@@ -36,30 +34,30 @@ var CreateOperationalIntent = &cobra.Command{
 			return err
 		}
 
-		mannaUtmClient, err := manna_utm_client.NewMannaUtmClient("localhost", port)
+		mannaUtmClient, err := manna_utm_uspace_client.NewMannaUtmClient("localhost", port, writeRequests)
 		if err != nil {
 			log.Fatalf("unable to create USS mannaUtmClient: %v", err)
 		}
 
-		log.Debugf("attempting to fetch most recent telemetry message from USS server on port: %d", port)
+		log.Debugf("attempting to create operational intent via manna-utm U-Space interface on port: %d", port)
 
-		// read the operational intent from the provided file
-		intent, err := uspace.LoadOperationalIntentFromFile(filePath)
+		// load config
+		appCnf, err := config.LoadConfig("./config.yaml")
 		if err != nil {
-			log.Fatalf("unable to load operational intent from file: %v", err)
+			log.Fatalf("error occurred loading config: %v", err)
 		}
 
-		err = mannaUtmClient.CreateOperationalIntent(cmd.Context(), uavId, entityId, intent)
+		oiCnf, err := appCnf.GetOperationalIntentConfigByName(oiName)
+		if err != nil {
+			log.Fatalf("error occurred loading operational intent config: %v", err)
+		}
+
+		oi := uspace.OperationalIntentFromConfig(oiCnf)
+
+		err = mannaUtmClient.CreateOperationalIntent(cmd.Context(), uavId, entityId, oi)
 		if err != nil {
 			log.Fatalf("failed to create operational intent: %v", err.Error())
 		}
-
-		data, err := json.MarshalIndent(intent, "", "    ")
-		if err != nil {
-			log.Errorf("unable to marshal returned operational intent details from USS to JSON: %v", err)
-		}
-
-		fmt.Println(string(data))
 
 		return nil
 	},

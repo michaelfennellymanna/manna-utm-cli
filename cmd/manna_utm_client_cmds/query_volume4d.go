@@ -6,7 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"manna.aero/manna-utm-geojson-api/manna_utm_client"
+	"manna.aero/manna-utm-geojson-api/manna_utm_uspace_client"
 )
 
 var Query4dVolume = &cobra.Command{
@@ -24,8 +24,12 @@ var Query4dVolume = &cobra.Command{
 		}
 
 		fromFilePath, err := cmd.Flags().GetString("file")
+		writeRequests, err := cmd.Flags().GetBool("dump-requests")
+		if err != nil {
+			return err
+		}
 
-		client, err := manna_utm_client.NewMannaUtmClient("localhost", port)
+		client, err := manna_utm_uspace_client.NewMannaUtmClient("localhost", port, writeRequests)
 		if err != nil {
 			log.Fatalf("unable to create USS client: %v", err)
 		}

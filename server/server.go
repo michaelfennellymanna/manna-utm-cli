@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"manna.aero/manna-utm-geojson-api/sequence"
+	"manna.aero/manna-utm-geojson-api/config"
 )
 
 func GetServer(port int) *gin.Engine {
@@ -21,7 +21,7 @@ func GetServer(port int) *gin.Engine {
 	})
 
 	router.GET("/features", func(c *gin.Context) {
-		config, err := sequence.LoadConfig("./.libconfig/sequence.yaml")
+		config, err := config.LoadConfig("./.libconfig/sequence.yaml")
 		if err != nil {
 			c.Data(http.StatusInternalServerError, "application/json", []byte(err.Error()))
 		}
@@ -64,7 +64,7 @@ func GetServer(port int) *gin.Engine {
 
 		log.Infof("operning sse connection")
 
-		config, err := sequence.LoadConfig("./.libconfig/sequence.yaml")
+		config, err := config.LoadConfig("./.libconfig/sequence.yaml")
 		if err != nil {
 			log.Fatalf("error occurred marshalling sequence to GeoJson %v", err)
 		}

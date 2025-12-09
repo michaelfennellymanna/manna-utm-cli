@@ -9,12 +9,14 @@ import (
 )
 
 var (
-	port      int
-	fromFile  string
-	entityId  string
-	missionId string
-	uavId     int
-	logLevel  string = "info"
+	port                    int
+	fromFile                string
+	entityId                string
+	missionId               string
+	oiName                  string
+	uavId                   int
+	logLevel                string = "info"
+	writeRequestsToHttpFile bool   = false
 )
 
 var rootCmd = &cobra.Command{
@@ -34,10 +36,13 @@ func init() {
 	uss_client_cmds.GetOperationalIntentDetails.Flags().StringVar(&entityId, "entityId", "", "The entityId of the operational intent to fetch latest telemetry for.")
 
 	manna_utm_client_cmds.Query4dVolume.Flags().StringVar(&fromFile, "file", "", "The file that contains the JSON for the 4d volume you want to send.")
-	manna_utm_client_cmds.CreateOperationalIntent.Flags().StringVar(&fromFile, "file", "", "The file that contains the JSON for the operational intent you want to create.")
+	manna_utm_client_cmds.Query4dVolume.Flags().BoolVar(&writeRequestsToHttpFile, "w", false, "Specify true/false to enable/disable writing requests to http files.")
+
+	manna_utm_client_cmds.CreateOperationalIntent.Flags().StringVarP(&oiName, "name", "n", "", "The name of the operational intent that you want to create.")
 	manna_utm_client_cmds.CreateOperationalIntent.Flags().IntVar(&port, "port", 28082, "The port that manna-utm is listening on.")
-	manna_utm_client_cmds.CreateOperationalIntent.Flags().StringVar(&missionId, "mission_id", "", "The ID of the mission that you want to create.")
-	manna_utm_client_cmds.CreateOperationalIntent.Flags().IntVar(&uavId, "uav_id", 1, "The ID of the UAV flying the payload in the operational intent.")
+	manna_utm_client_cmds.CreateOperationalIntent.Flags().StringVarP(&missionId, "mission_id", "m", "", "The ID of the mission that you want to create.")
+	manna_utm_client_cmds.CreateOperationalIntent.Flags().IntVarP(&uavId, "uav_id", "u", 1, "The ID of the UAV flying the payload in the operational intent.")
+	manna_utm_client_cmds.CreateOperationalIntent.Flags().BoolVarP(&writeRequestsToHttpFile, "dump-requests", "d", false, "Specify true/false to enable/disable writing requests to http files.")
 }
 
 func configureLogging(level string) {

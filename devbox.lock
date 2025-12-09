@@ -1,0 +1,57 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "github:NixOS/nixpkgs/nixpkgs-unstable": {
+      "last_modified": "2025-11-25T14:41:04Z",
+      "resolved": "github:NixOS/nixpkgs/dc205f7b4fdb04c8b7877b43edb7b73be7730081?lastModified=1764081664&narHash=sha256-sUoHmPr%2FEwXzRMpv1u%2FkH%2BdXuvJEyyF2Q7muE%2Bt0EU4%3D"
+    },
+    "httpyac@latest": {
+      "last_modified": "2025-11-23T21:50:36Z",
+      "resolved": "github:NixOS/nixpkgs/ee09932cedcef15aaf476f9343d1dea2cb77e261#httpyac",
+      "source": "devbox-search",
+      "version": "6.16.7",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/7pghcx1hg0nwy7s2qpakv82a9ima7l8i-httpyac-6.16.7",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/7pghcx1hg0nwy7s2qpakv82a9ima7l8i-httpyac-6.16.7"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/g4jmwq5xjmn97bwvs5l072z4srm67jyg-httpyac-6.16.7",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/g4jmwq5xjmn97bwvs5l072z4srm67jyg-httpyac-6.16.7"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/qj2dcwfv5gaar4scghffqr3hi3wld8sq-httpyac-6.16.7",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/qj2dcwfv5gaar4scghffqr3hi3wld8sq-httpyac-6.16.7"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/yry4fzkw8n7skw5p30lzy38jbmypa3bs-httpyac-6.16.7",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/yry4fzkw8n7skw5p30lzy38jbmypa3bs-httpyac-6.16.7"
+        }
+      }
+    }
+  }
+}

@@ -8,26 +8,27 @@ import (
 	"time"
 
 	"github.com/paulmach/orb"
-	"manna.aero/manna-utm-geojson-api/sequence"
+	"manna.aero/manna-utm-geojson-api/config"
+	"manna.aero/manna-utm-geojson-api/geo"
 )
 
 // OperationalIntentFromConfig constructs the JSON body for a
 // request to create an operational intent in manna-utm, given a config file.
 //
 // see https://github.com/m4a3/manna-utm/blob/persistence/src/main/java/manna/aero/utm/controller/UTMController.java#L73-L91
-func OperationalIntentFromConfig(config *sequence.OperationalIntentConfig) *OperationalIntent {
-	// load the config
+func OperationalIntentFromConfig(oiCnf *config.OperationalIntentConfig) *OperationalIntent {
+	// load the oiCnf
 	// create standard hexagonal 4d volumes for each waypoint
 	curTime := time.Now()
-	timeIncrement := config.Duration / time.Duration(len(config.WaypointCoordinates))
+	timeIncrement := oiCnf.Duration / time.Duration(len(oiCnf.WaypointCoordinates))
 	altitude := 0.0
 
 	// loop through all coordinates, creating waypoints and volumes for each
 	var volumes []Volume4d
 	var waypoints []Waypoint
-	for _, coordinate := range config.WaypointCoordinates {
+	for _, coordinate := range oiCnf.WaypointCoordinates {
 		// create the 4d volume for the coordinate
-		startTime, endTime, polygon := sequence.CreateStd4dVolContents(curTime, timeIncrement, orb.Point{coordinate[1], coordinate[0]})
+		startTime, endTime, polygon := geo.CreateStd4dVolContents(curTime, timeIncrement, orb.Point{coordinate[1], coordinate[0]})
 		volumes = append(volumes, *create4dVolFromStdContents(startTime, endTime, polygon))
 		curTime = endTime
 
@@ -44,7 +45,7 @@ func OperationalIntentFromConfig(config *sequence.OperationalIntentConfig) *Oper
 
 	// construct the final request body type
 	return &OperationalIntent{
-		Priority:      config.Priority,
+		Priority:      oiCnf.Priority,
 		DepartureTime: curTime,
 		Volumes:       volumes,
 		Waypoints:     waypoints,

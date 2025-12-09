@@ -22,11 +22,6 @@ var UssClientFetchTelemetry = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if len(args) == 1 {
-			port = 28080
-			log.Infof("no port defined, configuring target USS port to default %d", port)
-		}
-
 		log.SetLevel(log.InfoLevel)
 
 		baseUrl := fmt.Sprintf("http://localhost:%d/", port)

@@ -1,4 +1,4 @@
-package manna_utm_client
+package manna_utm_uspace_client
 
 import (
 	"bytes"

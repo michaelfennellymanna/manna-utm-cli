@@ -8,9 +8,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"manna.aero/manna-utm-geojson-api/config"
 	"manna.aero/manna-utm-geojson-api/model/uspace"
 	"manna.aero/manna-utm-geojson-api/model/utm"
-	"manna.aero/manna-utm-geojson-api/sequence"
 )
 
 const PERSONAL_LIB_PATH = "./.libconfig/personal"
@@ -25,7 +25,7 @@ var Data = &cobra.Command{
 			return err
 		}
 
-		config, err := sequence.LoadConfig(fromFile)
+		config, err := config.LoadConfig(fromFile)
 		if err != nil {
 			log.Fatalf("error occurred loading config: %v", err)
 		}
@@ -96,7 +96,7 @@ var Data = &cobra.Command{
 	},
 }
 
-func ConvertToGeoJsonAndWriteToFile(c *sequence.Config) error {
+func ConvertToGeoJsonAndWriteToFile(c *config.Config) error {
 	geoJsonDir := fmt.Sprintf("%s/geojson", PERSONAL_LIB_PATH)
 	err := os.MkdirAll(geoJsonDir, os.ModePerm)
 

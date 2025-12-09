@@ -1,17 +1,32 @@
 package utm
 
 import (
+	"bytes"
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/paulmach/orb"
 	log "github.com/sirupsen/logrus"
-	"manna.aero/manna-utm-geojson-api/sequence"
+	"manna.aero/manna-utm-geojson-api/config"
+	"manna.aero/manna-utm-geojson-api/geo"
 )
 
 type OperationalIntent struct {
 	Reference OperationalIntentReference `json:"reference"`
 	Details   OperationalIntentDetails   `json:"details"`
+}
+
+func (oi OperationalIntent) toReader() *bytes.Reader {
+	// Marshal the struct into JSON.
+	jsonBytes, err := json.Marshal(oi)
+	if err != nil {
+		log.Errorf("Error marshaling OperationalIntent to JSON: %v", err)
+		return nil
+	}
+
+	// Create a bytes.Reader from the JSON bytes.
+	return bytes.NewReader(jsonBytes)
 }
 
 type OperationalIntentReference struct {
@@ -42,7 +57,7 @@ type Volume3d struct {
 	AltitudeUpper  float64     `json:"altitude_upper"`
 }
 
-func OperationalIntentFromConfig(oicnf *sequence.OperationalIntentConfig) *OperationalIntent {
+func OperationalIntentFromConfig(oicnf *config.OperationalIntentConfig) *OperationalIntent {
 	log.Tracef("constructing UTM operational intent for operational intent config: %s", oicnf.Name)
 	// construct the volumes
 	var vols []Volume4d
@@ -66,7 +81,7 @@ func OperationalIntentFromConfig(oicnf *sequence.OperationalIntentConfig) *Opera
 }
 
 func getVolume4dFromCoordinate(lat float64, lng float64, startTime time.Time, duration time.Duration) *Volume4d {
-	polygon := sequence.HexagonPlanar(orb.Point{lng, lat})
+	polygon := geo.HexagonPlanar(orb.Point{lng, lat})
 	var vol3d Volume3d
 	vol3d.OutlinePolygon = polygon
 	vol3d.AltitudeLower = 0.0
