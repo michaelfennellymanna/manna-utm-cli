@@ -1,4 +1,4 @@
-package manna_utm_uspace_client
+package uspace_client
 
 import (
 	"bytes"
@@ -16,9 +16,9 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"manna.aero/manna-utm-geojson-api/config"
-	"manna.aero/manna-utm-geojson-api/model/uspace"
-	"manna.aero/manna-utm-geojson-api/model/utm"
+	"manna.aero/manna.utm.cli/model/uspace"
+	"manna.aero/manna.utm.cli/model/utm"
+	"manna.aero/manna.utm.cli/pkg/config"
 )
 
 type MannaUtmClient struct {
@@ -78,6 +78,29 @@ func (mutm *MannaUtmClient) Query4dVolume(ctx context.Context, volName string) (
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", mutm.UserAgent)
 	req.Header.Set("Content-Type", "application/json")
+
+	mutm.logRequestContents(*req, IdAndTimeRecord{startTime: time.Now(), missionId: volName})
+
+	resp, err := mutm.c.Do(req)
+	if err != nil {
+		if resp == nil {
+			return nil, err
+		}
+
+		errJson, err := json.Marshal(err.Error())
+		if err != nil {
+			return nil, fmt.Errorf("error trying to parse error response from manna-utm: %v", err)
+		}
+		return nil, &MannaUtmError{StatusCode: resp.StatusCode, Body: string(errJson)}
+	}
+	defer resp.Body.Close()
+
+	// Handle non-2xx responses with useful errors
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		// read a limited amount so you don’t blow memory on huge error bodies
+		b, _ := io.ReadAll(io.LimitReader(resp.Body, 64*1024))
+		return nil, &MannaUtmError{StatusCode: resp.StatusCode, Body: string(b)}
+	}
 
 	return nil, nil
 }
@@ -183,16 +206,16 @@ func (mutm *MannaUtmClient) CreateOperationalIntent(ctx context.Context, uavId i
 	}
 }
 
-type EndOpIntentReq struct {
+type IdAndTimeRecord struct {
 	missionId string
 	startTime time.Time
 }
 
-func (eoir EndOpIntentReq) getTime() time.Time {
+func (eoir IdAndTimeRecord) getTime() time.Time {
 	return eoir.startTime
 }
 
-func (eoir EndOpIntentReq) getMissionId() string {
+func (eoir IdAndTimeRecord) getMissionId() string {
 	return eoir.missionId
 }
 
@@ -217,7 +240,7 @@ func (mutm *MannaUtmClient) EndOperationalIntent(ctx context.Context, missionId 
 	req.Header.Set("User-Agent", mutm.UserAgent)
 	req.Header.Set("Content-Type", "application/json")
 
-	mutm.logRequestContents(*req, EndOpIntentReq{startTime: time.Now(), missionId: missionId})
+	mutm.logRequestContents(*req, IdAndTimeRecord{startTime: time.Now(), missionId: missionId})
 
 	resp, err := mutm.c.Do(req)
 	if err != nil {

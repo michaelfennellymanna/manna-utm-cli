@@ -1,5 +1,6 @@
 name: "Downtown Geneva simulation."
 manna_utm_port: 28082
+rid_dp_port: 38080
 operational_intent_configs:
   - name: "SWITZERLAND1"
     owner_name: utm.manna.aero

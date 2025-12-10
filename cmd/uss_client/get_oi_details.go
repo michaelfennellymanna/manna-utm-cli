@@ -1,4 +1,4 @@
-package uss_client_cmds
+package uss_client
 
 import (
 	"encoding/json"
@@ -6,7 +6,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"manna.aero/manna-utm-geojson-api/uss_client"
+	"manna.aero/manna.utm.cli/pkg/config"
+	"manna.aero/manna.utm.cli/pkg/uss_client"
 )
 
 var GetOperationalIntentDetails = &cobra.Command{
@@ -14,30 +15,26 @@ var GetOperationalIntentDetails = &cobra.Command{
 	Short: "Get operational intent details for <entity_id> from the USS listening on <port>.",
 	Args:  cobra.MaximumNArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		port, err := cmd.Flags().GetInt("port")
-		if err != nil {
-			return err
-		}
-
 		entityId, err := cmd.Flags().GetString("entity_id")
 		if err != nil {
 			return err
 		}
-		if len(args) == 1 {
-			port = 28080
-			log.Infof("no port defined, configuring target USS port to default %d", port)
+
+		c, err := config.LoadConfig("./config.yaml")
+		if err != nil {
+			return err
 		}
 
-		baseUrl := fmt.Sprintf("http://localhost:%d/", port)
+		baseUrl := fmt.Sprintf("http://localhost:%d/", c.MannaUtmPort)
 		client, err := uss_client.NewUssClient(baseUrl)
 		if err != nil {
 			log.Fatalf("unable to create USS client: %v", err)
 		}
 
-		log.Debugf("attempting to fetch most recent telemetry message from USS server on port: %d", port)
-		details, err := client.GetOperationalIntentDetailsByEntityId(cmd.Context(), entityId)
+		log.Debugf("attempting to fetch operational intent details from USS server on port: %d", c.MannaUtmPort)
+		details, err := client.GetOperationalIntentDetailsByEntityId(cmd.Context(), c.MannaUtmPort, entityId)
 		if err != nil {
-			log.Fatalf("unable to fetch most recent telemetry message from USS server: %v", err)
+			log.Fatalf("unable to fetch operational intent details from USS server: %v", err)
 		}
 
 		data, err := json.MarshalIndent(details, "", "    ")

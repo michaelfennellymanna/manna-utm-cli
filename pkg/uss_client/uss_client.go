@@ -7,11 +7,12 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"path"
 	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"manna.aero/manna-utm-geojson-api/model/utm"
+	"manna.aero/manna.utm.cli/model/utm"
 )
 
 type UssClient struct {
@@ -44,9 +45,8 @@ func (e *UssClientError) Error() string {
 }
 
 // GetOperationalIntentDetailsByEntityId from the USS.
-func (ussClient *UssClient) GetOperationalIntentDetailsByEntityId(ctx context.Context, entityId string) (*utm.OperationalIntentDetails, *UssClientError) {
-
-	requestUrl := fmt.Sprintf("%s/uss/v1/operational_intents/%s", ussClient.ussBaseUrl.String(), entityId)
+func (ussClient *UssClient) GetOperationalIntentDetailsByEntityId(ctx context.Context, ussPort int, entityId string) (*utm.OperationalIntentDetails, error) {
+	requestUrl := fmt.Sprintf("http://localhost:%d/%s", ussPort, path.Join("/uss/v1/operational_intents", entityId))
 
 	req, err := http.NewRequestWithContext(ctx, "GET", requestUrl, nil)
 	if err != nil {
@@ -54,10 +54,13 @@ func (ussClient *UssClient) GetOperationalIntentDetailsByEntityId(ctx context.Co
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", ussClient.UserAgent)
+	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := ussClient.c.Do(req)
-	if err != nil {
+	if err != nil && resp != nil { // client returned err
 		return nil, &UssClientError{StatusCode: resp.StatusCode, Body: err.Error()}
+	} else if err != nil { // err while trying to execute the request
+		return nil, fmt.Errorf("an error occurred while trying to execute request: %v", err)
 	}
 	defer resp.Body.Close()
 

@@ -10,12 +10,13 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	"gopkg.in/yaml.v3"
-	"manna.aero/manna-utm-geojson-api/geo"
+	"manna.aero/manna.utm.cli/pkg/geo"
 )
 
 type Config struct {
 	Name                     string                    `yaml:"name"`
 	MannaUtmPort             int                       `yaml:"manna_utm_port"`
+	RidDpPort                int                       `yaml:"rid_dp_port"`
 	OperationalIntentConfigs []OperationalIntentConfig `yaml:"operational_intent_configs"`
 	FourDVolumes             []Volume4dConfig          `yaml:"4d_volumes"`
 }

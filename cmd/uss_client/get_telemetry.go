@@ -1,12 +1,12 @@
-package uss_client_cmds
+package uss_client
 
 import (
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"manna.aero/manna-utm-geojson-api/config"
-	"manna.aero/manna-utm-geojson-api/uss_client"
+	"manna.aero/manna.utm.cli/pkg/config"
+	"manna.aero/manna.utm.cli/pkg/uss_client"
 )
 
 var UssClientFetchTelemetry = &cobra.Command{

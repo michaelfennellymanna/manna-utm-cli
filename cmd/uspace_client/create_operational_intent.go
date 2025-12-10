@@ -1,16 +1,17 @@
-package manna_utm_client_cmds
+package uspace_client
 
 import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"manna.aero/manna-utm-geojson-api/config"
-	"manna.aero/manna-utm-geojson-api/manna_utm_uspace_client"
-	"manna.aero/manna-utm-geojson-api/model/uspace"
+	"manna.aero/manna.utm.cli/model/uspace"
+	"manna.aero/manna.utm.cli/pkg/config"
+	"manna.aero/manna.utm.cli/pkg/uspace_client"
 )
 
 var CreateOperationalIntent = &cobra.Command{
-	Use:   "mutm-coi",
-	Short: "Create an operational intent for <mission_id> with the data from <file> in manna-utm listening on <port>.",
+	Use:     "us-create-operational-intent",
+	Aliases: []string{"coi"},
+	Short:   "Create an operational intent for <operation_name> in manna-utm.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		writeRequests, err := cmd.Flags().GetBool("dump-requests")
 		if err != nil {
@@ -26,7 +27,7 @@ var CreateOperationalIntent = &cobra.Command{
 			return err
 		}
 
-		mannaUtmClient, err := manna_utm_uspace_client.NewMannaUtmClient("localhost", appConfig.MannaUtmPort, writeRequests)
+		mannaUtmClient, err := uspace_client.NewMannaUtmClient("localhost", appConfig.MannaUtmPort, writeRequests)
 		if err != nil {
 			log.Fatalf("unable to create USS mannaUtmClient: %v", err)
 		}

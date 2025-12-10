@@ -8,9 +8,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"manna.aero/manna-utm-geojson-api/config"
-	"manna.aero/manna-utm-geojson-api/model/uspace"
-	"manna.aero/manna-utm-geojson-api/model/utm"
+	"manna.aero/manna.utm.cli/model/uspace"
+	"manna.aero/manna.utm.cli/model/utm"
+	"manna.aero/manna.utm.cli/pkg/config"
 )
 
 const PERSONAL_LIB_PATH = "./.libconfig/personal"

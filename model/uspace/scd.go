@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/paulmach/orb"
-	"manna.aero/manna-utm-geojson-api/config"
-	"manna.aero/manna-utm-geojson-api/geo"
+	"manna.aero/manna.utm.cli/pkg/config"
+	"manna.aero/manna.utm.cli/pkg/geo"
 )
 
 // Volume4d is equivalent to the type MannaUspaceVolume4d in manna-utm.
@@ -44,8 +44,8 @@ func (vol Volume4d) MarshalJSON() ([]byte, error) {
 	if firstAndLastVertexOverlap {
 		for i := 0; i < len(ring)-1; i++ {
 			polygon = append(polygon, Vertex{
-				Latitude:  float32(ring[i][1]),
-				Longitude: float32(ring[i][0]),
+				Latitude:  float32(ring[i][0]),
+				Longitude: float32(ring[i][1]),
 			})
 		}
 	}

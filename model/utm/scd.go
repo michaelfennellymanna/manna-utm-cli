@@ -8,8 +8,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/paulmach/orb"
 	log "github.com/sirupsen/logrus"
-	"manna.aero/manna-utm-geojson-api/config"
-	"manna.aero/manna-utm-geojson-api/geo"
+	"manna.aero/manna.utm.cli/pkg/config"
+	"manna.aero/manna.utm.cli/pkg/geo"
 )
 
 type OperationalIntent struct {

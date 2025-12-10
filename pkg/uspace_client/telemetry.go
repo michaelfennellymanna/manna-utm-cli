@@ -1,4 +1,4 @@
-package manna_utm_uspace_client
+package uspace_client
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
-	"manna.aero/manna-utm-geojson-api/model/uspace"
+	"manna.aero/manna.utm.cli/model/uspace"
 )
 
 // SendTelemetry interfaces with the manna-utm telemetry interface

@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/paulmach/orb"
-	"manna.aero/manna-utm-geojson-api/config"
-	"manna.aero/manna-utm-geojson-api/geo"
+	"manna.aero/manna.utm.cli/pkg/config"
+	"manna.aero/manna.utm.cli/pkg/geo"
 )
 
 // OperationalIntentFromConfig constructs the JSON body for a
