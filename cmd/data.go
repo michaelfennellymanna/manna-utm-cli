@@ -8,7 +8,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"manna.aero/manna.utm.cli/model/uspace"
+	"manna.aero/manna.utm.cli/model/uspace/virtual_uspace"
 	"manna.aero/manna.utm.cli/model/utm"
 	"manna.aero/manna.utm.cli/pkg/config"
 )
@@ -75,7 +75,7 @@ var Data = &cobra.Command{
 			go func() {
 				defer wg.Done()
 				// create the U-Space telemetry data
-				oi := uspace.OperationalIntentFromConfig(&oiConfig)
+				oi := virtual_uspace.virtualOiFromConfig(&oiConfig)
 				data, err := json.MarshalIndent(oi, "", "  ")
 				if err != nil {
 					log.Errorf("error occurred marshalling operational intent (name=%s) to JSON: %v", oiConfig.Name, err.Error())

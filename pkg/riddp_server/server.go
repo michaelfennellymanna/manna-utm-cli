@@ -76,7 +76,7 @@ func GetServer(appConfig config.Config, writeRequests bool) *gin.Engine {
 		}
 
 		// create a telemetry bus, that we can listen to for the configured flights
-		telemetryBus := GetTelemetryBusFromConfig(appConfig, 1000)
+		telemetryBus := StartTelemetryProducersForAllOperationalIntents(appConfig, 1000)
 
 		for {
 			select {

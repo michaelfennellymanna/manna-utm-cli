@@ -3,7 +3,7 @@ package uspace_client
 import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"manna.aero/manna.utm.cli/model/uspace"
+	"manna.aero/manna.utm.cli/model/uspace/virtual_uspace"
 	"manna.aero/manna.utm.cli/pkg/config"
 	"manna.aero/manna.utm.cli/pkg/uspace_client"
 )
@@ -45,7 +45,7 @@ var CancelOperationalIntent = &cobra.Command{
 			log.Fatalf("error occurred loading operational intent config: %v", err)
 		}
 
-		oi := uspace.OperationalIntentFromConfig(oiCnf)
+		oi := virtual_uspace.virtualOiFromConfig(oiCnf)
 
 		err = mannaUtmClient.CreateOperationalIntent(cmd.Context(), oiCnf.UavId, oiCnf.MissionId.String(), oi)
 		if err != nil {

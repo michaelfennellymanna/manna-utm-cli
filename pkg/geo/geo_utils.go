@@ -102,3 +102,9 @@ func (fp *pointSeries) interpolateWindow(index int) {
 	fp.interpolatedTelemetrySeries[(index*3)+2] = p2
 	fp.seriesLock.Unlock()
 }
+
+func Midpoint(p1 orb.Point, p2 orb.Point) orb.Point {
+	mLat := p1.Lat() + (p2.Lat()-p1.Lat())/2
+	mLon := p1.Lon() + (p2.Lon()-p1.Lon())/2
+	return orb.Point{mLat, mLon}
+}

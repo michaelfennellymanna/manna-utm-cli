@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/geojson"
 	"manna.aero/manna.utm.cli/pkg/config"
 	"manna.aero/manna.utm.cli/pkg/geo"
 )
@@ -60,6 +61,15 @@ func (vol Volume4d) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (vol Volume4d) GeoJsonFeature() *geojson.Feature {
+	f := geojson.NewFeature(vol.Polygon)
+	f.Properties["altitude_lower"] = vol.AltitudeLower
+	f.Properties["altitude_upper"] = vol.AltitudeUpper
+	f.Properties["time_start"] = vol.TimeStart
+	f.Properties["time_end"] = vol.TimeEnd
+	return f
+}
+
 func (vol Volume4d) ToReader() (*bytes.Reader, error) {
 	jsonBytes, err := vol.MarshalJSON()
 	if err != nil {
@@ -88,6 +98,17 @@ type Waypoint struct {
 	Time      time.Time `json:"time"`
 }
 
+func (wp Waypoint) ToPoint() orb.Point {
+	return orb.Point{wp.Latitude, wp.Longitude}
+}
+
+func (wp Waypoint) GeoJsonFeature() *geojson.Feature {
+	f := geojson.NewFeature(wp.ToPoint())
+	f.Properties["altitude"] = wp.Altitude
+	f.Properties["time"] = wp.Time
+	return f
+}
+
 type waypointJSON struct {
 	Altitude  float64 `json:"altitude"`
 	Latitude  float64 `json:"latitude"`
@@ -109,9 +130,10 @@ func (wp Waypoint) MarshalJSON() ([]byte, error) {
 	return json.Marshal(out)
 }
 
-// OperationalIntent is equivalent to the type MannUspaceOperationalIntent
+// OperationalIntent is equivalent to the type [MannaUspaceOperationalIntent]
 // in manna-utm.
-// see https://github.com/m4a3/manna-utm/blob/persistence/src/main/java/manna/aero/utm/model/manna/MannaUspaceOperationalIntent.java
+//
+// [MannaUspaceOperationalIntent]: https://github.com/m4a3/manna-utm/blob/persistence/src/main/java/manna/aero/utm/model/manna/MannaUspaceOperationalIntent.java
 type OperationalIntent struct {
 	Priority      uint16     `json:"priority"`
 	DepartureTime time.Time  `json:"departure_time"`
@@ -126,7 +148,7 @@ type operationalIntentJSON struct {
 	Waypoints     []Waypoint `json:"waypoints"`
 }
 
-func (oi OperationalIntent) MarshalJSON() ([]byte, error) {
+func (oi *OperationalIntent) MarshalJSON() ([]byte, error) {
 	return json.MarshalIndent(&operationalIntentJSON{
 		Priority:      oi.Priority,
 		DepartureTime: oi.DepartureTime.UnixMilli(),
@@ -135,7 +157,7 @@ func (oi OperationalIntent) MarshalJSON() ([]byte, error) {
 	}, "", "  ")
 }
 
-func (oi OperationalIntent) ToReader() (*bytes.Reader, error) {
+func (oi *OperationalIntent) ToReader() (*bytes.Reader, error) {
 	jsonBytes, err := oi.MarshalJSON()
 	if err != nil {
 		return nil, err
